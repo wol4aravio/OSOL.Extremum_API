@@ -1,3 +1,5 @@
+import org.rogach.scallop._
+
 import cats.effect.IO
 import com.twitter.finagle.{Http, Service}
 import com.twitter.finagle.http.{Request, Response}
@@ -8,23 +10,28 @@ import io.finch.catsEffect._
 import io.finch.circe._
 import io.circe.generic.auto._
 
+
+class Conf(arguments: Seq[String]) extends ScallopConf(arguments) {
+  val port = opt[Int](default = Some(8080), validate = (0<))
+  verify()
+}
+
 object Main extends App {
 
   case class Message(hello: String)
 
-  def healthcheck: Endpoint[IO, String] = get(pathEmpty) {
+  def healthCheck: Endpoint[IO, String] = get(pathEmpty) {
     Ok("OK")
   }
 
-  def helloWorld: Endpoint[IO, Map[String, String]] = get("hello") {
-    Ok(Map(
-      "hello" -> "World",
-      "bye" -> "bye"
-    ))
-  }
-
   def service: Service[Request, Response] = JsonpFilter
-      .andThen(helloWorld.toServiceAs[Application.Json])
+    .andThen(
+      Bootstrap
+        .serve[Text.Plain](healthCheck)
+        .toService)
 
-  Await.ready(Http.server.serve(":8080", service))
+  override def main(args: Array[String]): Unit = {
+    val conf = new Conf(args)
+    Await.ready(Http.server.serve(s":${conf.port()}", service))
+  }
 }
