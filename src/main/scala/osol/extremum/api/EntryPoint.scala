@@ -19,16 +19,16 @@ class Conf(arguments: Seq[String]) extends ScallopConf(arguments) {
 
 object Main extends App {
 
-  case class Message(hello: String)
+  case class InfoJSON(name: String, n_dim: Int, search_area: List[(Double, Double)], x_optimal: List[Double])
 
   def healthCheck: Endpoint[IO, String] = get(pathEmpty) {
     Ok("OK")
   }
 
-  def sphereFunctionInfo: Endpoint[IO, Map[String, Any]] = get("sphere" :: path[String] :: "info") {
-    n_dim_str: String => {
-      val f = new SphereFunction(n_dim_str.toInt)
-      Ok(Map("name" -> f.name, "n_dim" -> f.n_dim, "search_area" -> f.search_area, "x_optimal" -> f.x_optimal))
+  def sphereFunctionInfo: Endpoint[IO, InfoJSON] = get("sphere" :: path[Int] :: "info") {
+    n_dim: Int => {
+      val f = new SphereFunction(n_dim)
+      Ok(InfoJSON(f.name, f.n_dim, f.search_area, f.x_optimal))
     }
   }
 
