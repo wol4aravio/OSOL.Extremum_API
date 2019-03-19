@@ -11,7 +11,9 @@ val scalatestVersion = "3.0.5"
 libraryDependencies ++= Seq(
   "com.github.finagle" %% "finchx-core"  % finchVersion,
   "com.github.finagle" %% "finchx-circe"  % finchVersion,
+  "io.circe" %% "circe-core" % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
+  "io.circe" %% "circe-parser" % circeVersion,
   "org.scalatest" %% "scalatest" % scalatestVersion % "test",
   "org.rogach" %% "scallop" % "3.2.0"
 )
