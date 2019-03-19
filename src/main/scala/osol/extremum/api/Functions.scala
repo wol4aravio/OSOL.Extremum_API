@@ -97,7 +97,7 @@ object Functions {
             this.name,
             this.n_dim(last_name, first_name),
             this.search_area(last_name, first_name),
-            null))
+            Seq.empty[Double]))
     }
 
     def functionCalc: Endpoint[IO, ResultJSON] = get(slug_name :: "calc" :: (param[String]("last_name") :: param[String]("first_name") :: jsonBody[InputJSON])) {
