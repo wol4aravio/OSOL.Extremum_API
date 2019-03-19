@@ -24,7 +24,7 @@ object Functions {
 
     def calculate(x: Seq[Double]): Double
 
-    def functionInfo: Endpoint[IO, InfoJSON] = get(slug_name :: path[Int] :: "info") {
+    def functionInfo: Endpoint[IO, InfoJSON] = get(slug_name :: "info" :: param[Int]("n_dim")) {
       n_dim: Int => Ok(InfoJSON(this.name, n_dim, this.search_area(n_dim), this.x_optimal(n_dim)))
     }
 
