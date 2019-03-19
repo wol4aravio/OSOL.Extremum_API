@@ -24,7 +24,7 @@ object Main extends App {
   }
 
   def listAvailableFunctions: Endpoint[IO, Seq[String]] = get("functions") {
-    Ok(Seq("sphere", "rastrigin"))
+    Ok(Seq("sphere", "rastrigin", "ackley"))
   }
 
   def service: Service[Request, Response] =
@@ -33,6 +33,7 @@ object Main extends App {
      .serve[Application.Json](listAvailableFunctions)
      .serve[Application.Json](SphereFunction.functionInfo :+: SphereFunction.functionCalc)
      .serve[Application.Json](RastriginFunction.functionInfo :+: RastriginFunction.functionCalc)
+     .serve[Application.Json](AckleyFunction.functionInfo :+: AckleyFunction.functionCalc)
      .toService
 
   override def main(args: Array[String]): Unit = {

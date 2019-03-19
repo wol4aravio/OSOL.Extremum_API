@@ -50,4 +50,21 @@ object Functions {
     def calculate(x: Seq[Double]): Double = x.map(v => v * v - 10.0 * math.cos(2.0 * math.Pi * v)).sum + 10.0 * x.size
   }
 
+  object AckleyFunction extends OptimizationBenchmark {
+    val name = "AckleyFunction"
+    val slug_name = "ackley"
+
+    def search_area(n_dim: Int): Seq[(Double, Double)] = (1 to n_dim).map(_ => (-32.768, 32.768))
+    def x_optimal(n_dim: Int): Seq[Double] = List.fill[Double](n_dim)(0.0)
+    def calculate(x: Seq[Double]): Double = {
+      val a = 20
+      val b = 0.2
+      val c = 2 * math.Pi
+      val d = x.size
+      val part_1 = -a * math.exp(-b * math.sqrt(x.map(v => v * v).sum / d))
+      val part_2 = -math.exp(x.map(v => math.cos(c * v)).sum / d)
+      a + math.exp(1) + part_1 + part_2
+    }
+  }
+
 }
