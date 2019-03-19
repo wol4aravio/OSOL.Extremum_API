@@ -19,23 +19,15 @@ class Conf(arguments: Seq[String]) extends ScallopConf(arguments) {
 
 object Main extends App {
 
-  case class InfoJSON(name: String, n_dim: Int, search_area: List[(Double, Double)], x_optimal: List[Double])
-
   def healthCheck: Endpoint[IO, String] = get(pathEmpty) {
     Ok("OK")
-  }
-
-  def sphereFunctionInfo: Endpoint[IO, InfoJSON] = get("sphere" :: path[Int] :: "info") {
-    n_dim: Int => {
-      val f = new SphereFunction(n_dim)
-      Ok(InfoJSON(f.name, f.n_dim, f.search_area, f.x_optimal))
-    }
   }
 
   def service: Service[Request, Response] =
     Bootstrap
       .serve[Text.Plain](healthCheck)
-      .serve[Application.Json](sphereFunctionInfo)
+      .serve[Application.Json](SphereFunction.functionInfo)
+      .serve[Application.Json](SphereFunction.functionCalc)
       .toService
 
   override def main(args: Array[String]): Unit = {

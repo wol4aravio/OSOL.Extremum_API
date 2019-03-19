@@ -1,23 +1,45 @@
 package osol.extremum.api
 
+import cats.effect.IO
+import com.twitter.finagle.{Http, Service}
+import com.twitter.finagle.http.{Request, Response}
+import com.twitter.util.Await
+import io.finch._
+import io.finch.catsEffect._
+import io.finch.circe._
+import io.circe.generic.auto._
+
 object Functions {
+
+  case class InfoJSON(name: String, n_dim: Int, search_area: Seq[(Double, Double)], x_optimal: Seq[Double])
+  case class ResultJSON(result: Double)
+  case class InputJSON(x: Seq[Double])
 
   abstract class OptimizationBenchmark {
     val name: String
-    val n_dim: Int
-    val search_area: List[(Double, Double)]
-    val x_optimal: List[Double]
+    val slug_name: String
 
-    def calculate(x: List[Double]): Double
+    def search_area(n_dim: Int): Seq[(Double, Double)]
+    def x_optimal(n_dim: Int): Seq[Double]
+
+    def calculate(x: Seq[Double]): Double
+
+    def functionInfo: Endpoint[IO, InfoJSON] = get(slug_name :: path[Int] :: "info") {
+      n_dim: Int => Ok(InfoJSON(this.name, n_dim, this.search_area(n_dim), this.x_optimal(n_dim)))
+    }
+
+    def functionCalc: Endpoint[IO, ResultJSON] = get(slug_name :: "calc" :: jsonBody[InputJSON]) {
+      inputJSON: InputJSON => Ok(ResultJSON(calculate(inputJSON.x)))
+    }
   }
 
-  class SphereFunction(dimensionality: Int) extends OptimizationBenchmark {
+  object SphereFunction extends OptimizationBenchmark {
     val name = "SphereFunction"
-    val n_dim = dimensionality
-    val search_area: List[(Double, Double)] = (1 to n_dim).map(_ => (-25.0, 25.0)).toList
-    val x_optimal: List[Double] = List.fill[Double](n_dim)(0.0)
+    val slug_name = "sphere"
+    def search_area(n_dim: Int): Seq[(Double, Double)] = (1 to n_dim).map(_ => (-25.0, 25.0))
+    def x_optimal(n_dim: Int): Seq[Double] = List.fill[Double](n_dim)(0.0)
 
-    def calculate(x: List[Double]): Double = x.map(v => v * v).sum
+    def calculate(x: Seq[Double]): Double = x.map(v => v * v).sum
   }
 
 }
