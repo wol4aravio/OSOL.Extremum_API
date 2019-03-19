@@ -21,5 +21,5 @@ assemblyMergeStrategy in assembly := {
   case x => MergeStrategy.first
 }
 
-coverageMinimum := 95
-coverageFailOnMinimum := true
+//coverageMinimum := 95
+//coverageFailOnMinimum := true

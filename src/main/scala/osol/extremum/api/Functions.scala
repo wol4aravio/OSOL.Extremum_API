@@ -42,4 +42,13 @@ object Functions {
     def calculate(x: Seq[Double]): Double = x.map(v => v * v).sum
   }
 
+  object RastriginFunction extends OptimizationBenchmark {
+    val name = "RastriginFunction"
+    val slug_name = "rastrigin"
+    def search_area(n_dim: Int): Seq[(Double, Double)] = (1 to n_dim).map(_ => (-5.12, 5.12))
+    def x_optimal(n_dim: Int): Seq[Double] = List.fill[Double](n_dim)(0.0)
+
+    def calculate(x: Seq[Double]): Double = x.map(v => v * v - 10.0 * math.cos(2.0 * math.Pi * v)).sum + 10.0 * x.size
+  }
+
 }

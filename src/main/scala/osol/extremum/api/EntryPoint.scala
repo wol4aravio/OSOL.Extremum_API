@@ -23,12 +23,17 @@ object Main extends App {
     Ok("OK")
   }
 
+  def listAvailableFunctions: Endpoint[IO, Seq[String]] = get("functions") {
+    Ok(Seq("sphere", "rastrigin"))
+  }
+
   def service: Service[Request, Response] =
     Bootstrap
-      .serve[Text.Plain](healthCheck)
-      .serve[Application.Json](SphereFunction.functionInfo)
-      .serve[Application.Json](SphereFunction.functionCalc)
-      .toService
+     .serve[Text.Plain](healthCheck)
+     .serve[Application.Json](listAvailableFunctions)
+     .serve[Application.Json](SphereFunction.functionInfo :+: SphereFunction.functionCalc)
+     .serve[Application.Json](RastriginFunction.functionInfo :+: RastriginFunction.functionCalc)
+     .toService
 
   override def main(args: Array[String]): Unit = {
     val conf = new Conf(args)
